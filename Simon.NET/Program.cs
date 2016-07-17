@@ -1,5 +1,3 @@
-using System;
-
 namespace Simon.NET
 {
     static class Program
@@ -16,4 +14,3 @@ namespace Simon.NET
         }
     }
 }
-

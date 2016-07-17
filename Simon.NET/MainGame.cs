@@ -1,21 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Audio;
 
 namespace Simon.NET
 {
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class MainGame : Microsoft.Xna.Framework.Game
+    public class MainGame : Game
     {
         #region Fields
 
@@ -26,10 +22,11 @@ namespace Simon.NET
 
         SpriteFont font;
 
+        Dictionary<String, SoundEffect> soundEffects;
+
         SimonPlayer simonPlayer;
         SimonPattern simonPattern;
         SimonButton[] simonButtons;
-        SimonAudio simonAudio;
 
         #endregion
 
@@ -47,8 +44,6 @@ namespace Simon.NET
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             IsMouseVisible = true;
 
             backgroundColor = Color.Gray;
@@ -68,12 +63,17 @@ namespace Simon.NET
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            font = Content.Load<SpriteFont>(@"Fonts\GameFont");
+
+            soundEffects = new Dictionary<String, SoundEffect>();
+
+            soundEffects.Add("1", Content.Load<SoundEffect>(@"Audio\1"));
+            soundEffects.Add("2", Content.Load<SoundEffect>(@"Audio\2"));
+            soundEffects.Add("3", Content.Load<SoundEffect>(@"Audio\3"));
+            soundEffects.Add("4", Content.Load<SoundEffect>(@"Audio\4"));
+            soundEffects.Add("e", Content.Load<SoundEffect>(@"Audio\e"));
 
             simonButtons = new SimonButton[4];
-            simonAudio = new SimonAudio(@"Content\Audio\Simon.NET.xgs", @"Content\Audio\Default.xwb", @"Content\Audio\Default.xsb");
-
-            font = Content.Load<SpriteFont>(@"Fonts\GameFont");
 
             for (Int32 i = 0; i < simonButtons.Length; i++)
             {
@@ -100,10 +100,6 @@ namespace Simon.NET
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
-
-            simonAudio.Dispose();
-
             base.UnloadContent();
         }
 
@@ -158,7 +154,8 @@ namespace Simon.NET
                     {
                         if (SimonStatus.DelayTime == 0)
                         {
-                            simonAudio.Play((simonPattern[SimonStatus.CurrentPatternIndex] + 1).ToString());
+                            soundEffects[(simonPattern[SimonStatus.CurrentPatternIndex] + 1).ToString()].Play();
+
                             simonButtons[simonPattern[SimonStatus.CurrentPatternIndex]].IsLight = true;
                         }
 
@@ -319,8 +316,6 @@ namespace Simon.NET
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            // TODO: Add your drawing code here
-
             GraphicsDevice.Clear(backgroundColor);
 
             spriteBatch.Begin(); // Required for start drawing.
@@ -385,7 +380,8 @@ namespace Simon.NET
         private void UpdatePressedToReleased(Int32 buttonIndex)
         {
             simonButtons[buttonIndex].IsLight = true; // light button
-            simonAudio.Play((buttonIndex + 1).ToString()); // play sound
+
+            soundEffects[(buttonIndex + 1).ToString()].Play(); // play sound
 
             if (SimonStatus.IsGameStarted)
             {
@@ -416,7 +412,7 @@ namespace Simon.NET
 
         private void UpdateFailedGame(String errorMessage)
         {
-            simonAudio.Play("e"); // play "error" sound
+            soundEffects["e"].Play(); // play "error" sound
 
             SimonStatus.IsGameFailed = true;
             SimonStatus.IsGameStarted = false;
