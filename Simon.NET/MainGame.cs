@@ -123,8 +123,6 @@ namespace Simon.NET
 				this.Exit();
 			}
 
-			// TODO: Add your update logic here
-
 			// Part 1: If Simon is playing
 
 			if (SimonStatus.IsSequencePlaying)

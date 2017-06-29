@@ -34,9 +34,6 @@ namespace Simon.NET
 		internal KeyboardState CurrentKeyboardState { get; set; }
 		internal MouseState CurrentMouseState { get; set; }
 
-		internal static Keys BaseKey
-		{
-			get { return Keys.Up; }
-		}
+		internal static Keys BaseKey => Keys.Up;
 	}
 }
